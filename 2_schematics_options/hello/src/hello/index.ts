@@ -1,5 +1,5 @@
 import { Rule, SchematicContext, Tree } from '@angular-devkit/schematics';
-
+import { Schema } from './schema';
 // TODO 1. build and run schematics with random parameters (eg --a --b --c 123)
 
 // TODO 2. create schema.d.ts file in /hello folder
@@ -16,17 +16,17 @@ import { Rule, SchematicContext, Tree } from '@angular-devkit/schematics';
 
 // TODO 8. reference schema.json in the collection.json file for hello schematics ( using "schema" property with path to file as a value )
 
-export function hello(_options: any): Rule {
+export function hello(_options: Schema): Rule {
 
   return (tree: Tree, _context: SchematicContext) => {
 
     console.log('Running schematics with following options', _options);
 
     // TODO 8. retrieve name property form _options ( store it in a name variable )
-
+    const { name, greeting } = _options;
     // TODO 9. use name variable to parametrize hello.js file content ( replace NG-MY with variable using string template syntax ${} )
 
-    tree.create('hello.js', `console.log('Hello NG-MY!');`);
+    tree.create('hello.js', `console.log('${greeting} ${name}!');`);
 
     // TODO 10. build and run schematics with --name param to create file (mind --dry-run=false because of the dev mode)
 

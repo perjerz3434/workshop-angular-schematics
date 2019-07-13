@@ -8,11 +8,11 @@ export function hello(_options: any): Rule {
   return (tree: Tree, _context: SchematicContext) => {
 
     // TODO 1. create variable for desired file name (eg hello.js)
-
+    const fileName = 'hello.js';
     // TODO 2. create variable with the content of the created file (try using javascript template strings)
-
+    const content = `console.log('hello-world');`;
     // TODO 3. create file in the tree using the pre-created variables
-
+    tree.create(fileName,content);
     // TODO 4. build and run schematics to create file (mind --dry-run because of the dev mode)
 
     // TODO 5. run created file using node

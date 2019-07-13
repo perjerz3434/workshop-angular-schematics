@@ -1,4 +1,5 @@
-import { Rule, SchematicContext, Tree } from '@angular-devkit/schematics';
+import { strings } from '@angular-devkit/core';
+import { apply, mergeWith, Rule, SchematicContext, template, Tree, url } from '@angular-devkit/schematics';
 
 import { Schema as HelloOptions } from './schema';
 
@@ -24,7 +25,7 @@ export function hello(_options: HelloOptions): Rule {
     console.log('Running schematics with following options', _options);
 
     // TODO 6. load template into "sourceTpl" variable using url() function ( from @angular-devkit/schematics package ) with "./files" parameter
-
+    const sourceTpl = url('./files');
     // TODO 7. apply options onto template using apply() function ( from @angular-devkit/schematics package )
     // the function accepts our sourceTpl and an array of rules
     // we will provide a single rule called template() ( from @angular-devkit/schematics package )
@@ -32,12 +33,12 @@ export function hello(_options: HelloOptions): Rule {
     // result of the apply() function will be stored in the sourceTplParametrized variable
 
     // TODO 8. import the strings object ( from @angular-devkit/core ) and spread it into the template() options ( { ..._options, ...strings } )
-
+    const sourceTplParametrized = apply(sourceTpl, [template({..._options, ...strings, addExclamation})])
     // TODO 9. return mergeWith() with "sourceTplParametrized" as an argument and call it with (tree, _context)
     // to prevent typescript compiler from complaining that we have unused variable tree
     // remove "return tree;" as we're already returning mergeWith()
 
-    return tree;
+    return mergeWith(sourceTplParametrized)(tree, _context);
 
     // TODO 10. build and run schematics (mind --dry-run because of the dev mode) and explore generated file
 
@@ -51,7 +52,9 @@ export function hello(_options: HelloOptions): Rule {
 
 // TODO 13. create and export addExclamation() function which accepts value of type string as an argument
 // and returns that string plus exclamation mark ( ! ) (or in other words it returns "value!" for "value"
-
+export function addExclamation(value: string): string {
+  return `${value}!`;
+}
 // TODO 14. pass addExclamation function into the template options { ..._options, ...strings, addExclamation }
 
 // TODO 15. use add exclamation in the template by changing name = '<%= name %>' to name = '<%= addExclamation(name) %>'
