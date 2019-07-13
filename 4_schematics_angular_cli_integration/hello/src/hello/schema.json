@@ -19,6 +19,10 @@
       "type": "string",
       "description": "The type of greeting we want to use",
       "default": "Hello"
+    },
+    "project": {
+      "type": "string",
+      "description": "project name that we want to generate component"
     }
   },
   "required": [

@@ -1,5 +1,15 @@
-import { apply, mergeWith, Rule, SchematicContext, template, Tree, url } from '@angular-devkit/schematics';
+import {
+    apply,
+    mergeWith, move,
+    Rule,
+    SchematicContext,
+    SchematicsException,
+    template,
+    Tree,
+    url,
+} from '@angular-devkit/schematics';
 import { strings } from '@angular-devkit/core';
+import { parseName } from '@schematics/angular/utility/parse-name';
 
 import { Schema as HelloOptions } from './schema';
 
@@ -26,34 +36,36 @@ export function hello(_options: HelloOptions): Rule {
         // The following part is pretty specific and code heavy so dont hesitate to ask for clarification if something is not clear
 
         // TODO 5. read angular.json file from tree and store it in a "workspaceAsBuffer" variable
-
+        const workspaceAsBuffer = tree.read('angular.json');
         // TODO 6. check if the variable is defined and if not throw new SchematicsException with message that we are not inside of Angular CLI workspace
-
+        if (!workspaceAsBuffer) {
+            throw new SchematicsException('We are not inside of Angular Workspace');
+        }
         // TODO 7. JSON parse the retrieved angular.json file ( use toString() to convert retrieved buffer to string first ) and store it in a workspace variable
-
+        const workspaces = JSON.parse(workspaceAsBuffer.toString());
         // TODO 8. get a "defaultProject" property and store it in the "projectName" variable
-
+        const projectName = _options.project || workspaces.defaultProject;
         // TODO 9. get and store "project" configuration by retrieving "projectName" property from "workspace.projects" (workspace.projects[projectName])
-
+        const project = workspaces.projects[projectName];
         // TODO 10. create "sourceRoot" and "projectType" variables and retrieve them from "project"
-
+        const  { sourceRoot, projectType } = project;
         // TODO 11. create "type" variable and populate it either with "app" or "lib" string based on if the "projectType" has value of "application" string
-
+        const type = projectType === 'application' ? 'app' : 'lib';
         // TODO 11. create "path" variable which will consist of "sourceRoot" slash "type"
-
+        const path = `${sourceRoot}/${type}`;
         // TODO 12. import "parseName" function from "@schematics/angular/utility/parse-name"
 
         // TODO 13. call parseName with prepared "path" and _.options.name and store the result in "parsed" variable
-
+        const parsed = parseName(path, _options.name);
         // TODO 14. re-assign "_options.name" to be "parsed.name"
-
+        _options.name = parsed.name;
         // TODO 15. import move() from "@angular-devkit/schematics"
 
         // TODO 16. add the move() function after the template() function in the rules array of the apply() function ( apply(tpl, [template(...), move()]) ) and call it with "parsed.path"
 
 
         const sourceTpl = url('./files');
-        const sourceTplParametrized = apply(sourceTpl, [template({ ..._options, ...strings })]);
+        const sourceTplParametrized = apply(sourceTpl, [template({ ..._options, ...strings }), move(parsed.path)]);
 
 
         return mergeWith(sourceTplParametrized)(tree, _context);
